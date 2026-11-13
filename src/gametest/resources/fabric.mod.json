@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "chesttracker-test",
+  "version": "1.0.0",
+  "name": "Chest Tracker Test",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "red.jackf.chesttracker.test.ScanClientTest"
+    ]
+  },
+  "depends": {
+    "chesttracker": "*"
+  }
+}

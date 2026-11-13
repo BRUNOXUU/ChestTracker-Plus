@@ -4,8 +4,8 @@ This is the complete source of Chest Tracker Melhor, a modified version of
 [ponuing/ChestTracker](https://github.com/ponuing/ChestTracker) (branch `26.3`, commit `85be89c`).
 The full list of changes is in `modrinth/changelog.md`.
 
-To keep this archive small, it leaves out files that are not part of these changes and can be
-obtained elsewhere:
+The GitHub repository has everything needed to build. To stay small, the `-sources.zip` attached
+to each release leaves out files that are not part of these changes and can be obtained elsewhere:
 
 - `images/`: promotional images, identical to the upstream repository.
 - `libs/litematica-*.jar` and `libs/malilib-*.jar`: identical to the upstream repository at the

@@ -1,0 +1,11 @@
+{
+  "chesttracker.gui.containerTags": "Containers",
+  "chesttracker.gui.containerTags.all": "Todos",
+  "chesttracker.gui.distance": "A %s blocos",
+  "chesttracker.gui.distance.nearest": "Mais perto: a %s blocos",
+  "chesttracker.gui.distance.otherDimension": "Em outra dimensão",
+  "chesttracker.gui.waypoint.add": "Marcar waypoint",
+  "chesttracker.gui.waypoint.clearAll": "Limpar waypoints",
+  "chesttracker.gui.waypoint.clearAll.tooltip": "Remove todos os waypoints deste banco de memória, em todas as dimensões",
+  "chesttracker.gui.waypoint.remove": "Remover waypoint"
+}

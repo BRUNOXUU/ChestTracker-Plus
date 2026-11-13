@@ -1,4 +1,4 @@
-# Chest Tracker Melhor
+# Chest Tracker Plus
 
 **A fork of [Chest Tracker (Unofficial port)](https://modrinth.com/mod/chest-tracker-port) for Minecraft 26.3**, which itself continues JackFred's original [Chest Tracker](https://modrinth.com/mod/chest-tracker). Everything the port does still works. This fork adds a world-wide container scan, named container groups, item distances and waypoints.
 
@@ -50,7 +50,7 @@ The saved scan lives in `<world>/chesttrackermelhor/containers.dat`.
 
 ---
 
-# 🇧🇷 Chest Tracker Melhor (português)
+# 🇧🇷 Chest Tracker Plus (português)
 
 **Um fork do [Chest Tracker (Unofficial port)](https://modrinth.com/mod/chest-tracker-port) para Minecraft 26.3**, que por sua vez continua o [Chest Tracker](https://modrinth.com/mod/chest-tracker) original do JackFred. Tudo que o port faz continua funcionando, e este fork acrescenta varredura de containers do mundo inteiro, grupos de containers por nome, distância dos itens e waypoints.
 

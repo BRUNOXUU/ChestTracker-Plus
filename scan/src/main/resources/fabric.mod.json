@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "chesttracker_scan",
+  "version": "${version}",
+  "name": "Chest Tracker Melhor",
+  "description": "Adds /chesttracker scan, which reads every chest, barrel and shulker box saved in the world and sends them to the player's Chest Tracker.",
+  "authors": [
+    "BRUNU"
+  ],
+  "license": "LGPL-3.0-only",
+  "icon": "assets/chesttracker_scan/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "red.jackf.chesttracker.scan.ChestTrackerScan"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": ">=26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
