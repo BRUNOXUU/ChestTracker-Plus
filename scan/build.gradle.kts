@@ -2,7 +2,7 @@ plugins {
     id("net.fabricmc.fabric-loom")
 }
 
-version = "1.0.0+26.3"
+version = "1.1.0+26.3"
 group = property("maven_group")!!
 
 base {

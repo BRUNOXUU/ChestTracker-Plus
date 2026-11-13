@@ -1,6 +1,6 @@
-# Building Chest Tracker Melhor
+# Building Chest Tracker Plus
 
-This is the complete source of Chest Tracker Melhor, a modified version of
+This is the complete source of Chest Tracker Plus, a modified version of
 [ponuing/ChestTracker](https://github.com/ponuing/ChestTracker) (branch `26.3`, commit `85be89c`).
 The full list of changes is in `modrinth/changelog.md`.
 
@@ -26,5 +26,5 @@ Then, with Java 25:
 ./gradlew build
 ```
 
-The jar for players and servers is `build/libs/ChestTrackerMelhor.jar`.
+The jar for players and servers is `build/libs/ChestTrackerPlus.jar`.
 Automated tests (singleplayer and dedicated server): `./gradlew runClientGameTest`.

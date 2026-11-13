@@ -75,7 +75,7 @@ public class ChestTrackerScan implements ModInitializer {
             return 0;
         }
         if (!ServerPlayNetworking.canSend(player, ScanPayloads.Batch.TYPE)) {
-            source.sendFailure(Component.literal("Seu cliente precisa do ChestTrackerMelhor para receber a varredura."));
+            source.sendFailure(Component.literal("Seu cliente precisa do Chest Tracker Plus para receber a varredura."));
             return 0;
         }
 

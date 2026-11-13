@@ -3,14 +3,14 @@
   "id": "chesttracker",
   "version": "${version}",
   "name": "Chest Tracker (Unofficial port)",
-  "description": "Client side item storage - remember where you've put things. Unofficial port Chest Tracker, modified by BRUNU in Chest Tracker Melhor.",
+  "description": "Client side item storage - remember where you've put things. Unofficial port Chest Tracker, modified by BRUNU in Chest Tracker Plus.",
   "authors": [
     "JackFred",
     "ponuing"
   ],
   "contributors": [
     "WinTone01 - Turkish Translations",
-    "BRUNU - Chest Tracker Melhor changes"
+    "BRUNU - Chest Tracker Plus changes"
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/chest-tracker-port",

@@ -1,4 +1,4 @@
-# Chest Tracker Melhor
+# Chest Tracker Plus
 
 **A fork of [Chest Tracker (Unofficial port)](https://modrinth.com/mod/chest-tracker-port) for Minecraft 26.3**, which itself continues JackFred's original [Chest Tracker](https://modrinth.com/mod/chest-tracker). Everything the port does still works. This fork adds a world-wide container scan, named container groups, item distances and waypoints.
 
@@ -18,6 +18,7 @@
 - **Distance in the tooltip**: hovering an item shows how far away the nearest container holding it is.
 - **Waypoints**: right-click an item and choose *Add waypoint*. A beacon-style beam rises from the nearest container holding it, and the container glows through walls. The beam is visible underground and beyond your render distance. It clears when you open the container, when you right-click the item again, or with the *Clear waypoints* button. Waypoints are saved between sessions.
 - **Left click highlight**: clicking an item lights up every listed container holding it, for as long as the Where Is It search lasts.
+- **Most items first**: the tooltip also lists the 3 containers holding the most of the item, with amount, name and distance (hold Shift for all), and the right-click menu can put the waypoint on the one holding the most.
 
 ### Memory
 - New memory lifetime option: **10 days**, which is now the default. A scan raises any shorter lifetime to 10 days and makes the item list range infinite, so far chests show up.
@@ -52,7 +53,7 @@ The saved scan lives in `<world>/chesttrackermelhor/containers.dat`.
 
 ---
 
-# 🇧🇷 Chest Tracker Melhor (português)
+# 🇧🇷 Chest Tracker Plus (português)
 
 **Um fork do [Chest Tracker (Unofficial port)](https://modrinth.com/mod/chest-tracker-port) para Minecraft 26.3**, que por sua vez continua o [Chest Tracker](https://modrinth.com/mod/chest-tracker) original do JackFred. Tudo que o port faz continua funcionando, e este fork acrescenta varredura de containers do mundo inteiro, grupos de containers por nome, distância dos itens e waypoints.
 
@@ -70,6 +71,7 @@ The saved scan lives in `<world>/chesttrackermelhor/containers.dat`.
 - **Distância no tooltip**: ao passar o mouse em um item, aparece a distância até o container mais próximo que tem esse item.
 - **Waypoints**: clique com o botão direito em um item e escolha *Marcar waypoint*. Um feixe de luz sobe do container mais próximo que tem o item, e o container brilha através das paredes. O feixe aparece debaixo da terra e além da distância de renderização. Ele sai quando você abre o container, clica com o botão direito no item de novo ou usa o botão *Limpar waypoints*. Os waypoints ficam salvos entre sessões.
 - **Destaque no clique esquerdo**: clicar em um item acende todos os containers listados que têm esse item, enquanto durar a busca do Where Is It.
+- **Maior quantidade primeiro**: o tooltip também mostra os 3 containers com mais quantidade do item, com quantidade, nome e distância (segure Shift para ver todos), e o menu do botão direito pode marcar o waypoint no que tem mais.
 
 ### Memória
 - Nova opção de duração das memórias: **10 dias**, que agora é o padrão. A varredura sobe para 10 dias qualquer duração menor e deixa infinito o alcance da lista de itens, para os baús distantes aparecerem.

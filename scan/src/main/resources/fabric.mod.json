@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "chesttracker_scan",
   "version": "${version}",
-  "name": "Chest Tracker Melhor",
+  "name": "Chest Tracker Plus",
   "description": "Adds /chesttracker scan, which reads every chest, barrel and shulker box saved in the world and sends them to the player's Chest Tracker.",
   "authors": [
     "BRUNU"

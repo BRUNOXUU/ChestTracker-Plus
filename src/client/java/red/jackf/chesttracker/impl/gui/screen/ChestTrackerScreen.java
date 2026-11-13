@@ -75,6 +75,8 @@ public class ChestTrackerScreen extends Screen {
     private static final int CLEAR_WAYPOINTS_GAP = 2;
     private static final Component TAG_PANEL_TITLE = translatable("chesttracker.gui.containerTags");
     private static final int CONTEXT_MENU_HEIGHT = 14;
+    /** Containers listed under "Most items" unless Shift is held. */
+    private static final int MOST_ITEMS_SHOWN = 3;
     private static final int CONTEXT_MENU_PADDING = 4;
     private static final int CONTEXT_MENU_BORDER = 0xFF000000;
     private static final int CONTEXT_MENU_BACKGROUND = 0xFF303030;
@@ -411,21 +413,77 @@ public class ChestTrackerScreen extends Screen {
         return containers.stream().min(Comparator.comparingDouble(entry -> distanceSquaredToPlayer(entry.getKey())));
     }
 
+    /** A container and how many of the hovered item it holds. */
+    private record Holding(Map.Entry<BlockPos, Memory> container, int count) {
+    }
+
+    private static int countIn(Memory memory, ItemStack wanted, boolean unpackNested) {
+        return memory.items().stream()
+                .flatMap(stack -> unpackNested ? Stream.concat(Stream.of(stack), NestedItemsGrabber.get(stack)) : Stream.of(stack))
+                .filter(stack -> ItemStack.isSameItemSameComponents(stack, wanted))
+                .mapToInt(ItemStack::getCount)
+                .sum();
+    }
+
+    /** @return the containers holding this item, the one with the most first; ties go to the nearest */
+    private List<Holding> largestFirst(ItemStack stack) {
+        boolean unpackNested = MemoryBankAccessImpl.INSTANCE.getLoadedInternal()
+                .map(bank -> bank.getMetadata().getSearchSettings().unpackNested).orElse(true);
+        return containersHolding(stack).stream()
+                .map(entry -> new Holding(entry, countIn(entry.getValue(), stack, unpackNested)))
+                .sorted(Comparator.comparingInt(Holding::count).reversed()
+                        .thenComparingDouble(holding -> distanceSquaredToPlayer(holding.container().getKey())))
+                .toList();
+    }
+
+    private boolean inPlayersDimension() {
+        return Objects.equals(ProviderUtils.getPlayersCurrentKey().orElse(null), currentMemoryKey);
+    }
+
+    private static String blocksAway(BlockPos pos) {
+        return Strings.commaSeparated((int) Math.round(Math.sqrt(distanceSquaredToPlayer(pos))));
+    }
+
+    /**
+     * The distance to the nearest container with this item and, when there are several, the ones holding the most:
+     * three of them, or every one while Shift is held.
+     */
     private List<Component> distanceTooltip(ItemStack stack) {
         var containers = containersHolding(stack);
         var closest = nearest(containers).orElse(null);
         if (closest == null) return List.of();
 
-        if (!Objects.equals(ProviderUtils.getPlayersCurrentKey().orElse(null), currentMemoryKey)) {
-            return List.of(translatable("chesttracker.gui.distance.otherDimension").withStyle(ChatFormatting.AQUA));
+        boolean sameDimension = inPlayersDimension();
+        List<Component> lines = new ArrayList<>();
+        if (sameDimension) {
+            lines.add(translatable(containers.size() > 1 ? "chesttracker.gui.distance.nearest" : "chesttracker.gui.distance", blocksAway(closest.getKey()))
+                    .withStyle(ChatFormatting.AQUA));
+        } else {
+            lines.add(translatable("chesttracker.gui.distance.otherDimension").withStyle(ChatFormatting.AQUA));
         }
+        if (containers.size() < 2) return lines;
 
-        String blocks = Strings.commaSeparated((int) Math.round(Math.sqrt(distanceSquaredToPlayer(closest.getKey()))));
-        return List.of(translatable(containers.size() > 1 ? "chesttracker.gui.distance.nearest" : "chesttracker.gui.distance", blocks)
-                .withStyle(ChatFormatting.AQUA));
+        List<Holding> largest = largestFirst(stack);
+        int shown = Minecraft.getInstance().hasShiftDown() ? largest.size() : Math.min(MOST_ITEMS_SHOWN, largest.size());
+        lines.add(translatable("chesttracker.gui.mostItems").withStyle(ChatFormatting.GOLD));
+        for (Holding holding : largest.subList(0, shown)) {
+            Component name = holding.container().getValue().renderName();
+            if (name == null) name = translatable("chesttracker.gui.mostItems.unnamed");
+            String count = Strings.commaSeparated(holding.count());
+            lines.add(Component.literal("  ").append(sameDimension
+                    ? translatable("chesttracker.gui.mostItems.entry", count, name, blocksAway(holding.container().getKey()))
+                    : translatable("chesttracker.gui.mostItems.entryOtherDimension", count, name)).withStyle(ChatFormatting.YELLOW));
+        }
+        if (shown < largest.size()) {
+            lines.add(Component.literal("  ").append(translatable("chesttracker.gui.mostItems.more", largest.size() - shown)).withStyle(ChatFormatting.GRAY));
+        }
+        return lines;
     }
 
-    /** Offers to mark the nearest container with this item, or to clear a waypoint already on one of them. */
+    /**
+     * Offers to mark the nearest container with this item, or the one holding the most of it, or to clear a
+     * waypoint already on one of them.
+     */
     private void openContextMenu(ItemStack stack, int mouseX, int mouseY) {
         var containers = containersHolding(stack);
         var closest = nearest(containers).orElse(null);
@@ -433,16 +491,24 @@ public class ChestTrackerScreen extends Screen {
 
         Identifier dimension = this.currentMemoryKey;
         var marked = containers.stream().filter(entry -> Waypoints.has(dimension, entry.getKey())).findFirst();
-        Component label = translatable(marked.isPresent() ? "chesttracker.gui.waypoint.remove" : "chesttracker.gui.waypoint.add");
-        Runnable action = marked.isPresent()
-                ? () -> Waypoints.removeAt(dimension, marked.get().getKey())
-                : () -> Waypoints.add(dimension, closest.getKey(), closest.getValue().otherPositions());
+        List<MenuOption> options = new ArrayList<>();
+        if (marked.isPresent()) {
+            options.add(new MenuOption(translatable("chesttracker.gui.waypoint.remove"), () -> Waypoints.removeAt(dimension, marked.get().getKey())));
+        } else {
+            options.add(new MenuOption(translatable("chesttracker.gui.waypoint.add"),
+                    () -> Waypoints.add(dimension, closest.getKey(), closest.getValue().otherPositions())));
+            var most = largestFirst(stack).getFirst().container();
+            if (!most.getKey().equals(closest.getKey())) {
+                options.add(new MenuOption(translatable("chesttracker.gui.waypoint.addMost"),
+                        () -> Waypoints.add(dimension, most.getKey(), most.getValue().otherPositions())));
+            }
+        }
 
-        int menuWidth = this.font.width(label) + 2 * CONTEXT_MENU_PADDING;
+        int menuWidth = options.stream().mapToInt(option -> this.font.width(option.label())).max().orElse(0) + 2 * CONTEXT_MENU_PADDING;
         this.contextMenu = new ContextMenu(
                 Math.min(mouseX, this.width - menuWidth),
-                Math.min(mouseY, this.height - CONTEXT_MENU_HEIGHT),
-                menuWidth, label, action);
+                Math.min(mouseY, this.height - options.size() * CONTEXT_MENU_HEIGHT),
+                menuWidth, List.copyOf(options));
     }
 
     private int tagPanelLeft() {
@@ -578,7 +644,8 @@ public class ChestTrackerScreen extends Screen {
             ContextMenu menu = this.contextMenu;
             this.contextMenu = null;
             if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
-                if (menu.contains(event.x(), event.y())) menu.action.run();
+                MenuOption option = menu.optionAt(event.x(), event.y());
+                if (option != null) option.action().run();
                 return true;
             }
         }
@@ -667,16 +734,27 @@ public class ChestTrackerScreen extends Screen {
         });
     }
 
-    private record ContextMenu(int x, int y, int width, Component label, Runnable action) {
-        private boolean contains(double mouseX, double mouseY) {
-            return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + CONTEXT_MENU_HEIGHT;
+    private record MenuOption(Component label, Runnable action) {
+    }
+
+    /** A small menu of options stacked one above the other. */
+    private record ContextMenu(int x, int y, int width, List<MenuOption> options) {
+        private @Nullable MenuOption optionAt(double mouseX, double mouseY) {
+            if (mouseX < x || mouseX >= x + width || mouseY < y) return null;
+            int row = (int) ((mouseY - y) / CONTEXT_MENU_HEIGHT);
+            return row < options.size() ? options.get(row) : null;
         }
 
         private void draw(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
-            graphics.fill(x, y, x + width, y + CONTEXT_MENU_HEIGHT, CONTEXT_MENU_BORDER);
-            graphics.fill(x + 1, y + 1, x + width - 1, y + CONTEXT_MENU_HEIGHT - 1,
-                    contains(mouseX, mouseY) ? CONTEXT_MENU_HOVER : CONTEXT_MENU_BACKGROUND);
-            graphics.text(font, label, x + CONTEXT_MENU_PADDING, y + 3, 0xFFFFFFFF);
+            graphics.fill(x, y, x + width, y + options.size() * CONTEXT_MENU_HEIGHT, CONTEXT_MENU_BORDER);
+            MenuOption hovered = optionAt(mouseX, mouseY);
+            for (int row = 0; row < options.size(); row++) {
+                int top = y + row * CONTEXT_MENU_HEIGHT;
+                MenuOption option = options.get(row);
+                graphics.fill(x + 1, top + 1, x + width - 1, top + CONTEXT_MENU_HEIGHT - 1,
+                        option == hovered ? CONTEXT_MENU_HOVER : CONTEXT_MENU_BACKGROUND);
+                graphics.text(font, option.label(), x + CONTEXT_MENU_PADDING, top + 3, 0xFFFFFFFF);
+            }
         }
     }
 

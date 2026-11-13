@@ -1,3 +1,23 @@
+## 1.1.0+26.3
+
+### English
+
+**Added**
+- The item tooltip lists the 3 containers holding the most of the item, with the amount, the container name and the distance. Hold Shift to list all of them.
+- New right-click option, *Mark the one with most*: it puts the waypoint on the container holding the most of the item.
+
+**Changed**
+- The mod is now called Chest Tracker Plus in the game, in Mod Menu and in the server log. Config folders keep their names, so your settings carry over.
+
+### Português
+
+**Adicionado**
+- O tooltip do item mostra os 3 containers com mais quantidade do item, com a quantidade, o nome do container e a distância. Segure Shift para ver todos.
+- Nova opção no botão direito, *Marcar o que tem mais*: coloca o waypoint no container com mais quantidade do item.
+
+**Alterado**
+- O mod agora se chama Chest Tracker Plus no jogo, no Mod Menu e no log do servidor. As pastas de configuração mantêm o nome, então suas configurações continuam valendo.
+
 ## 1.0.0+26.3 — first release / primeira versão
 
 Based on Chest Tracker (Unofficial port) 2.8.4+26.3 by ponuing (original mod by JackFred).

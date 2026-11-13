@@ -95,6 +95,7 @@ public class ScanClientTest implements FabricClientGameTest {
             verifyMemories(context);
             verifyScreen(context);
             verifyWaypoints(context, world.getServer());
+            verifyMostItems(context);
             verifySavedFileFlow(context, world.getServer());
         }
         LOGGER.info("RESULT singleplayer OK");
@@ -523,6 +524,64 @@ public class ScanClientTest implements FabricClientGameTest {
         context.setScreen(() -> null);
         context.waitTicks(5);
         LOGGER.info("RESULT waypoints OK");
+    }
+
+    /** An item spread over several containers: the tooltip ranks them and the menu can mark the largest. */
+    private static void verifyMostItems(ClientGameTestContext context) {
+        Map<BlockPos, Integer> stock = Map.of(
+                new BlockPos(40, 70, 2), 5,
+                new BlockPos(44, 70, 2), 300,
+                new BlockPos(48, 70, 2), 40,
+                new BlockPos(52, 70, 2), 1);
+        BlockPos largest = new BlockPos(44, 70, 2);
+        context.runOnClient(mc -> stock.forEach((pos, count) -> MemoryBankAccessImpl.INSTANCE.getLoadedInternal().orElseThrow()
+                .addMemory(CommonKeys.OVERWORLD, pos, MemoryBuilder.create(List.of(new ItemStack(Items.GLOWSTONE_DUST, count)))
+                        .withCustomName(Component.literal("Estoque")).inContainer(Blocks.CHEST).build())));
+
+        context.setScreen(() -> new ChestTrackerScreen(null));
+        context.waitForScreen(ChestTrackerScreen.class);
+        context.waitTicks(5);
+        ContainerTagListWidget tags = tagList(context);
+        context.runOnClient(mc -> tags.select("estoque"));
+        context.waitTicks(5);
+
+        context.runOnClient(mc -> {
+            ItemListWidget list = itemList(mc.gui.screen());
+            ItemStack listed = list.stackAt(list.getX() + 9, list.getY() + 9).orElseThrow();
+            var lines = ((List<Component>) call(mc.gui.screen(), "distanceTooltip", ItemStack.class, listed)).stream().map(Component::getString).toList();
+            LOGGER.info("RESULT most items tooltip: {}", lines);
+            check(lines.size() == 6, "nearest, header, three containers and the rest: " + lines);
+            check(lines.get(2).contains("300") && lines.get(3).contains("40") && lines.get(4).contains("5"), "largest first: " + lines);
+            check(lines.get(2).contains("Estoque"), "the container name should be shown: " + lines);
+            check(lines.get(5).contains("1"), "one container left out: " + lines);
+        });
+
+        // Holding Shift lists every container.
+        context.getInput().holdShift();
+        context.waitTicks(2);
+        context.runOnClient(mc -> {
+            ItemListWidget list = itemList(mc.gui.screen());
+            ItemStack listed = list.stackAt(list.getX() + 9, list.getY() + 9).orElseThrow();
+            var lines = ((List<Component>) call(mc.gui.screen(), "distanceTooltip", ItemStack.class, listed)).stream().map(Component::getString).toList();
+            check(lines.size() == 6 && lines.get(5).contains("1") && !lines.get(5).contains("more"), "Shift should show all four: " + lines);
+        });
+        context.getInput().releaseShift();
+        context.waitTicks(2);
+
+        // The second option of the menu marks the container holding the most.
+        rightClickFirstItem(context);
+        context.takeScreenshot("chesttracker-most-items-menu");
+        context.runOnClient(mc -> {
+            ItemListWidget list = itemList(mc.gui.screen());
+            mc.gui.screen().mouseClicked(new MouseButtonEvent(list.getX() + 11, list.getY() + 11 + 14, new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0)), false);
+            check(Waypoints.has(CommonKeys.OVERWORLD, largest), "the largest container should be marked: " + Waypoints.active());
+            Waypoints.clear();
+            stock.keySet().forEach(pos -> MemoryBankAccessImpl.INSTANCE.getLoadedInternal().orElseThrow().removeMemory(CommonKeys.OVERWORLD, pos));
+            tags.select(null);
+        });
+        context.setScreen(() -> null);
+        context.waitTicks(5);
+        LOGGER.info("RESULT most items OK");
     }
 
     private static void rightClickFirstItem(ClientGameTestContext context) {

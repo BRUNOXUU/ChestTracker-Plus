@@ -250,7 +250,7 @@ val singleJar = tasks.register<Zip>("singleJar") {
     val clientJar = tasks.named<Jar>("jar").flatMap { it.archiveFile }
     dependsOn(":scan:jar", "jar")
 
-    archiveFileName.set("ChestTrackerMelhor.jar")
+    archiveFileName.set("ChestTrackerPlus.jar")
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
 
     from(scanJar.map { zipTree(it) }) {
@@ -268,7 +268,7 @@ val singleJar = tasks.register<Zip>("singleJar") {
     from("LICENSE")
     // the notice of modification the LGPL asks for
     from("modrinth/changelog.md") {
-        rename { "CHANGES-CHEST-TRACKER-MELHOR.md" }
+        rename { "CHANGES-CHEST-TRACKER-PLUS.md" }
     }
 }
 

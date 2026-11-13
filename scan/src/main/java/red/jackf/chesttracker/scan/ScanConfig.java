@@ -32,7 +32,7 @@ final class ScanConfig {
     private static final String DEFAULT_TIME_ZONE = "America/Sao_Paulo";
 
     private static final String CORES_SECTION = """
-            # Chest Tracker Melhor - configuracoes do servidor
+            # Chest Tracker Plus - configuracoes do servidor
             #
             # Quantos nucleos do processador o /chesttracker scan new pode usar.
             # Mais nucleos deixam a varredura mais rapida, mas pesam mais no servidor.

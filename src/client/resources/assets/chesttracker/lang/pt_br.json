@@ -5,6 +5,12 @@
   "chesttracker.gui.distance.nearest": "Mais perto: a %s blocos",
   "chesttracker.gui.distance.otherDimension": "Em outra dimensão",
   "chesttracker.gui.waypoint.add": "Marcar waypoint",
+  "chesttracker.gui.waypoint.addMost": "Marcar o que tem mais",
+  "chesttracker.gui.mostItems": "Mais quantidade:",
+  "chesttracker.gui.mostItems.entry": "%s em %s - a %s blocos",
+  "chesttracker.gui.mostItems.entryOtherDimension": "%s em %s",
+  "chesttracker.gui.mostItems.unnamed": "sem nome",
+  "chesttracker.gui.mostItems.more": "e mais %s containers (segure Shift)",
   "chesttracker.gui.waypoint.clearAll": "Limpar waypoints",
   "chesttracker.gui.waypoint.clearAll.tooltip": "Remove todos os waypoints deste banco de memória, em todas as dimensões",
   "chesttracker.gui.waypoint.remove": "Remover waypoint"
